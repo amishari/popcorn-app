@@ -107,6 +107,23 @@ export default function App() {
             ))}
           </ul>
         </div>
+        <div className="box">
+          <button className="btn-toggle">+</button>
+          <ul className="list">
+            {data.map((item) => (
+              <li key={item.imdbID}>
+                <img src={item.Poster} className="img" />
+                <h3 className="title">{item.Title}</h3>
+                <div>
+                  <p>
+                    <span>🗓️</span>
+                    <span>{item.Year}</span>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </main>
     </div>
   );
