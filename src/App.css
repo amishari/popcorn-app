@@ -1,0 +1,105 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 62.5%;
+}
+body {
+  background-color: #28282c;
+}
+
+.nav-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  align-items: center;
+  background-color: #8f45a8;
+  margin: 3rem;
+  padding: 0.5rem 2rem;
+  height: 5vh;
+  border-radius: 0.8rem;
+  font-size: 2rem;
+  color: #fff;
+}
+.logo {
+  justify-self: left;
+  font-weight: 600;
+  font-size: 2.5rem;
+}
+.nav-bar input {
+  width: 100%;
+  background-color: #836d8a;
+  outline: none;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.nav-bar input::placeholder {
+  color: white;
+  font-size: 1.5rem;
+}
+.main {
+  margin-top: 2.4rem;
+  height: calc(100vh - 7.2rem - 3 * 2.4rem);
+  display: flex;
+  gap: 2.4rem;
+  justify-content: center;
+}
+.box {
+  width: 42rem;
+  max-width: 42rem;
+  background-color: rgb(34, 42, 52);
+  border-radius: 0.9rem;
+  overflow: scroll;
+  position: relative;
+}
+
+.btn-toggle {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  height: 2.4rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  background-color: #000;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 999;
+}
+.list li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 2.4rem;
+  font-size: 1.6rem;
+  align-items: center;
+  color: #fff;
+  padding: 1.6rem 3.2rem;
+  border-bottom: 1px solid #1e1c1c;
+}
+
+.list img {
+  width: 100%;
+  grid-row: 1 / -1;
+}
+
+.list h3 {
+  font-size: 1.8rem;
+}
+
+.list div {
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+}
+.list p {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
