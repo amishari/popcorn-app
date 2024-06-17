@@ -109,8 +109,29 @@ export default function App() {
         </div>
         <div className="box">
           <button className="btn-toggle">+</button>
+          <div className="summary">
+            <h2>Movies you watched</h2>
+            <div>
+              <p>
+                <span>#️⃣</span>
+                <span>{} movies</span>
+              </p>
+              <p>
+                <span>⭐️</span>
+                <span>{}</span>
+              </p>
+              <p>
+                <span>🌟</span>
+                <span>{}</span>
+              </p>
+              <p>
+                <span>⏳</span>
+                <span>{} min</span>
+              </p>
+            </div>
+          </div>
           <ul className="list">
-            {data.map((item) => (
+            {/* {data.map((item) => (
               <li key={item.imdbID}>
                 <img src={item.Poster} className="img" />
                 <h3 className="title">{item.Title}</h3>
@@ -121,7 +142,7 @@ export default function App() {
                   </p>
                 </div>
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
       </main>
