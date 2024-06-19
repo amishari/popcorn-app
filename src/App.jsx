@@ -1,4 +1,5 @@
 import "./App.css";
+import { useState } from "react";
 const data = [
   {
     Title: "Scar",
@@ -81,72 +82,132 @@ const data = [
       "https://m.media-amazon.com/images/M/MV5BMjM1MDIyMjA1NF5BMl5BanBnXkFtZTcwMzczNDI5OQ@@._V1_SX300.jpg",
   },
 ];
+const tempMovieData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt0133093",
+    Title: "The Matrix",
+    Year: "1999",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt6751668",
+    Title: "Parasite",
+    Year: "2019",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+  },
+];
 
 export default function App() {
+  const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState(data);
+  const [watched, setWatched] = useState(tempMovieData);
+
   return (
     <div>
-      <nav className="nav-bar">
-        <span className="logo">🍿 usePopCorn</span>
-        <input type="text" placeholder="Search movies ..." />
-        <span className="result"> 3 movies found!</span>
-      </nav>
-      <main className="main">
-        <div className="box">
-          <button className="btn-toggle">+</button>
-          <ul className="list">
-            {data.map((item) => (
-              <li key={item.imdbID}>
-                <img src={item.Poster} className="img" />
-                <h3 className="title">{item.Title}</h3>
-                <div>
-                  <p>
-                    <span>🗓️</span>
-                    <span>{item.Year}</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="box">
-          <button className="btn-toggle">+</button>
-          <div className="summary">
-            <h2>Movies you watched</h2>
-            <div>
-              <p>
-                <span>#️⃣</span>
-                <span>{} movies</span>
-              </p>
-              <p>
-                <span>⭐️</span>
-                <span>{}</span>
-              </p>
-              <p>
-                <span>🌟</span>
-                <span>{}</span>
-              </p>
-              <p>
-                <span>⏳</span>
-                <span>{} min</span>
-              </p>
-            </div>
-          </div>
-          <ul className="list">
-            {data.map((item) => (
-              <li key={item.imdbID}>
-                <img src={item.Poster} className="img" />
-                <h3 className="title">{item.Title}</h3>
-                <div>
-                  <p>
-                    <span>🗓️</span>
-                    <span>{item.Year}</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
+      <Navbar>
+        <Logo />
+        <Search query={query} setQuery={setQuery} />
+        <NumList movies={movies} />
+      </Navbar>
+      <Main>
+        <Box>
+          <MoviesList movies={movies} />
+        </Box>
+        <Box>
+          <WatchedSummary watched={watched} />
+        </Box>
+      </Main>
+    </div>
+  );
+}
+function Search({ query, setQuery }) {
+  return (
+    <input
+      type="text"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search movies ..."
+    />
+  );
+}
+function Logo() {
+  return <span className="logo">🍿 usePopCorn</span>;
+}
+function NumList({ movies }) {
+  return <span className="result"> Found {movies.length} results!</span>;
+}
+function Navbar({ children }) {
+  return <nav className="nav-bar">{children}</nav>;
+}
+
+function Main({ children }) {
+  return <main className="main">{children}</main>;
+}
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="box">
+      <button className="btn-toggle" onClick={() => setIsOpen((show) => !show)}>
+        {isOpen ? "–" : "+"}
+      </button>
+      {isOpen && children}
+    </div>
+  );
+}
+function MoviesList({ movies }) {
+  return (
+    <ul className="list">
+      {movies.map((movie) => (
+        <Movie movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
+  );
+}
+function Movie({ movie }) {
+  return (
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} className="img" />
+      <h3 className="title">{movie.Title}</h3>
+      <div>
+        <p>
+          <span>🗓️</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+function WatchedSummary({ watched }) {
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div>
+        <p>
+          <span>#️⃣</span>
+          <span> {watched.length}movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span></span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span></span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span> min</span>
+        </p>
+      </div>
     </div>
   );
 }
