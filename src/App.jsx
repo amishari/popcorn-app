@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const data = [
   {
     Title: "Scar",
@@ -105,22 +105,51 @@ const tempMovieData = [
       "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
   },
 ];
-
+const KEY = "769d777b";
+const query = "zxsrtu";
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState(data);
+  // const [query, setQuery] = useState('"trip"');
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempMovieData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(function () {
+    async function fetchMovie() {
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+        if (!res.OK)
+          throw new Error("Something went wrong in fetching movies!!");
+        const data = await res.json();
+        setMovies(data.Search);
+        console.log(data.Search);
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+      }
+    }
+
+    fetchMovie();
+  }, []);
 
   return (
     <div>
       <Navbar>
         <Logo />
-        <Search query={query} setQuery={setQuery} />
+        <Search />
         <NumList movies={movies} />
       </Navbar>
       <Main>
         <Box>
-          <MoviesList movies={movies} />
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MoviesList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
@@ -166,7 +195,7 @@ function Box({ children }) {
 function MoviesList({ movies }) {
   return (
     <ul className="list">
-      {movies.map((movie) => (
+      {movies?.map((movie) => (
         <Movie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
@@ -174,7 +203,7 @@ function MoviesList({ movies }) {
 }
 function Movie({ movie }) {
   return (
-    <li key={movie.imdbID}>
+    <li>
       <img src={movie.Poster} className="img" />
       <h3 className="title">{movie.Title}</h3>
       <div>
@@ -209,5 +238,16 @@ function WatchedSummary({ watched }) {
         </p>
       </div>
     </div>
+  );
+}
+function Loader() {
+  return <p className="loader"> Loading ...</p>;
+}
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔⛔</span>
+      {message}
+    </p>
   );
 }
