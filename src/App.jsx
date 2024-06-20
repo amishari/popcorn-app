@@ -106,7 +106,7 @@ const tempMovieData = [
   },
 ];
 const KEY = "769d777b";
-const query = "zxsrtu";
+const query = "pink";
 export default function App() {
   // const [query, setQuery] = useState('"trip"');
   const [movies, setMovies] = useState([]);
@@ -126,12 +126,15 @@ export default function App() {
         if (!res.OK)
           throw new Error("Something went wrong in fetching movies!!");
         const data = await res.json();
+        if (data.Response === "False") throw new Error("No movie Found");
         setMovies(data.Search);
         console.log(data.Search);
         setIsLoading(false);
       } catch (err) {
-        console.error(err);
+        console.log(err);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     }
 
