@@ -106,46 +106,69 @@ const tempMovieData = [
   },
 ];
 const KEY = "769d777b";
-const query = "pink";
+const tempQuery = "key";
 export default function App() {
   // const [query, setQuery] = useState('"trip"');
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempMovieData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  // useEffect(function () {
+  //   console.log("A");
+  // });
+  // useEffect(function () {
+  //   console.log("B");
+  // }, []);
+  // useEffect(
+  //   function () {
+  //     console.log("D");
+  //   },
+  //   [query]
+  // );
 
-  useEffect(function () {
-    async function fetchMovie() {
-      try {
-        setIsLoading(true);
-        setError("");
+  // console.log("C");
+  useEffect(
+    function () {
+      async function fetchMovie() {
+        try {
+          setIsLoading(true);
+          setError("");
 
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
-        if (!res.OK)
-          throw new Error("Something went wrong in fetching movies!!");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("No movie Found");
-        setMovies(data.Search);
-        console.log(data.Search);
-        setIsLoading(false);
-      } catch (err) {
-        console.log(err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+
+          if (!res.ok)
+            throw new Error("Something went wrong in fetching movies!!");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("No movie Found");
+          setMovies(data.Search);
+
+          setIsLoading(false);
+        } catch (err) {
+          console.log(err);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
 
-    fetchMovie();
-  }, []);
+      fetchMovie();
+    },
+    [query]
+  );
 
   return (
     <div>
       <Navbar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumList movies={movies} />
       </Navbar>
       <Main>
@@ -244,7 +267,7 @@ function WatchedSummary({ watched }) {
   );
 }
 function Loader() {
-  return <p className="loader"> Loading ...</p>;
+  return <p className="loader"> Loading....</p>;
 }
 function ErrorMessage({ message }) {
   return (

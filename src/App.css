@@ -12,7 +12,7 @@ body {
 
 .nav-bar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr); /*not responsive now*/
   justify-items: center;
   align-items: center;
   background-color: #8f45a8;
@@ -48,9 +48,9 @@ body {
   justify-content: center;
 }
 .box {
-  width: 42rem;
-  max-width: 42rem;
-  background-color: rgb(34, 42, 52);
+  width: 45%; /*used to be 42rem*/
+  max-width: 45%; /*used to be 42rem*/
+  background-color: rgb(49, 54, 58);
   border-radius: 0.9rem;
   overflow: scroll;
   position: relative;
