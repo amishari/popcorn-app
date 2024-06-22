@@ -249,6 +249,8 @@ function MovieDetails({ selectedId, onCloseMovie }) {
           <section>
             <div className="rating">
               <StarRating />
+              <button className="btn-add">+ Add to list</button>
+
               {/* {!isWatched ? (
                 <>
                   <StarRating
