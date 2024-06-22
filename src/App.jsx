@@ -1,5 +1,6 @@
 import "./App.css";
 import { useEffect, useState } from "react";
+import StarRating from "./Star/StarRating";
 const KEY = "769d777b";
 
 export default function App() {
@@ -247,6 +248,7 @@ function MovieDetails({ selectedId, onCloseMovie }) {
           </header>
           <section>
             <div className="rating">
+              <StarRating />
               {/* {!isWatched ? (
                 <>
                   <StarRating
