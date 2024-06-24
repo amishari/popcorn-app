@@ -1,8 +1,13 @@
 import { useState } from "react";
 import "./Star.css";
-export default function StarRating() {
+export default function StarRating({ onSetRating }) {
+  // onset rating passsed to access user rating state later.
   const [rating, setRating] = useState(0);
   const [tempRating, setTempRating] = useState(0);
+  function handleRating(rating) {
+    setRating(rating);
+    onSetRating(rating);
+  }
   return (
     <div>
       <div className="icon">
@@ -10,7 +15,7 @@ export default function StarRating() {
           <Star
             key={i}
             rating={rating}
-            onRating={() => setRating(i + 1)}
+            onRating={() => handleRating(i + 1)}
             onHoverIn={() => setTempRating(i + 1)}
             onHoverOut={() => setTempRating(0)}
             full={tempRating ? tempRating - 1 >= i : rating - 1 >= i}

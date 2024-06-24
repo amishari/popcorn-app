@@ -261,6 +261,9 @@ body {
   gap: 2.4rem;
   width: 50%;
 }
+.rating p {
+  font-size: 2rem;
+}
 .btn-add {
   background-color: #6741d9;
   color: #fff;
@@ -275,4 +278,19 @@ body {
 
 .btn-add:hover {
   background-color: #7950f2;
+}
+.icon {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  text-align: center;
+  justify-items: center;
+  align-items: center;
+  fill: yellow;
+  padding: 1rem;
+}
+.icon > span {
+  font-size: 3rem;
+  margin-left: 2rem;
+  color: yellow;
 }
