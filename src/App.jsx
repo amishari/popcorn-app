@@ -229,6 +229,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
     };
 
     onAddMovie(newWatchedMovie);
+    onCloseMovie();
   }
   useEffect(
     function () {
