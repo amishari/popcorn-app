@@ -1,6 +1,8 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import StarRating from "./Star/StarRating";
+const average = (arr) =>
+  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "769d777b";
 
 export default function App() {
@@ -33,16 +35,21 @@ export default function App() {
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
   }
+  function handleDeleteWatched(id) {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  }
 
   useEffect(
     function () {
+      const controller = new AbortController();
       async function fetchMovie() {
         try {
           setIsLoading(true);
           setError("");
 
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok)
@@ -65,6 +72,9 @@ export default function App() {
       }
 
       fetchMovie();
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -94,7 +104,10 @@ export default function App() {
           ) : (
             <>
               <WatchedSummary watched={watched} />
-              <WatchedMoviesList watched={watched} />
+              <WatchedMoviesList
+                watched={watched}
+                onDeleteWatched={handleDeleteWatched}
+              />
             </>
           )}
         </Box>
@@ -165,25 +178,28 @@ function Movie({ movie, onSelect, onCloseMovie }) {
   );
 }
 function WatchedSummary({ watched }) {
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watched.map((movie) => movie.userRating));
+  const avgRuntime = average(watched.map((movie) => movie.runtime));
   return (
     <div className="summary">
       <h2>Movies you watched</h2>
       <div>
         <p>
           <span>#️⃣</span>
-          <span> {watched.length}movies</span>
+          <span> {watched.length} movies</span>
         </p>
         <p>
           <span>⭐️</span>
-          <span></span>
+          <span>{avgImdbRating}</span>
         </p>
         <p>
           <span>🌟</span>
-          <span></span>
+          <span>{avgUserRating}</span>
         </p>
         <p>
           <span>⏳</span>
-          <span> min</span>
+          <span>{avgRuntime} min</span>
         </p>
       </div>
     </div>
@@ -231,6 +247,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
     onAddMovie(newWatchedMovie);
     onCloseMovie();
   }
+
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -245,6 +262,18 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
       getMovieDetails();
     },
     [selectedId]
+  );
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+        // console.log(`Clean up effect for movie ${title}`);
+      };
+    },
+    [title]
   );
   return (
     <div className="details">
@@ -306,20 +335,20 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
     </div>
   );
 }
-function WatchedMoviesList({ watched }) {
+function WatchedMoviesList({ watched, onDeleteWatched }) {
   return (
     <ul className="list">
       {watched.map((movie) => (
         <WatchedMovie
           movie={movie}
           key={movie.imdbID}
-          // onDeleteWatched={onDeleteWatched}
+          onDeleteWatched={onDeleteWatched}
         />
       ))}
     </ul>
   );
 }
-function WatchedMovie({ movie }) {
+function WatchedMovie({ movie, onDeleteWatched }) {
   return (
     <li>
       <img src={movie.poster} alt={`${movie.title} poster`} />
@@ -340,7 +369,7 @@ function WatchedMovie({ movie }) {
 
         <button
           className="btn-delete"
-          // onClick={() => onDeleteWatched(movie.imdbID)}
+          onClick={() => onDeleteWatched(movie.imdbID)}
         >
           X
         </button>
