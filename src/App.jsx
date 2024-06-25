@@ -60,7 +60,9 @@ export default function App() {
 
           setIsLoading(false);
         } catch (err) {
-          setError(err.message);
+          if (err.name !== "Abortwrror") {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
