@@ -12,6 +12,10 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [watched, setWatched] = useState(function () {
+    // whenever initial of use state depends on computation,
+    //always pass a function that React execute on initial render.
+    // not call a function inside the useState
+    // only PURE function.
     const storedList = localStorage.getItem("watched");
     return JSON.parse(storedList);
   });
@@ -46,7 +50,7 @@ export default function App() {
     function () {
       localStorage.setItem("watched", JSON.stringify(watched));
     },
-    [watched]
+    [watched] // as soon as watched changes it effects.
   );
 
   useEffect(
