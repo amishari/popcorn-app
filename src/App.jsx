@@ -145,7 +145,7 @@ function Search({ query, setQuery }) {
     function () {
       function callback(e) {
         if (document.activeElement === inputEl.current) return;
-        if (e.code === "Enter") {
+        if (e.code === "Enter" || e.code === "NumpadEnter") {
           inputEl.current.focus();
           setQuery("");
         }
@@ -261,6 +261,16 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+  const countRef = useRef(0); // we wanna to find out how many user changes his mind while rating a movie
+  // but we want it for behind the scene porpuses not registring in UI
+  // so we need a useref to be persisted among renders. we will store it in obj.we are not mutate in render logic so
+  // use effect is applied
+  useEffect(
+    function () {
+      if (userRating) countRef.current += 1;
+    },
+    [userRating]
+  );
   const {
     Title: title,
     Year: year,
@@ -283,6 +293,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      countRatingDecision: countRef.current,
     };
 
     onAddMovie(newWatchedMovie);
