@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./Star/StarRating";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -132,12 +132,37 @@ export default function App() {
   );
 }
 function Search({ query, setQuery }) {
+  // useEffect(
+  //   function () {
+  //     const el = document.querySelector(".search");
+  //     el.focus();
+  //   },
+  //   [query]
+
+  // );
+  const inputEl = useRef(null);
+  useEffect(
+    function () {
+      function callback(e) {
+        if (document.activeElement === inputEl.current) return;
+        if (e.code === "Enter") {
+          inputEl.current.focus();
+          setQuery("");
+        }
+      }
+      document.addEventListener("keydown", callback);
+      return () => document.addEventListener("keydown", callback);
+    },
+    [setQuery]
+  );
   return (
     <input
+      className="search"
       type="text"
       value={query}
       onChange={(e) => setQuery(e.target.value)}
       placeholder="Search movies ..."
+      ref={inputEl}
     />
   );
 }
