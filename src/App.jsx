@@ -2,6 +2,7 @@ import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./Star/StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -9,14 +10,9 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
-  const [watched, setWatched] = useState(function () {
-    // whenever initial of use state depends on computation,
-    //always pass a function that React execute on initial render.
-    // not call a function inside the useState
-    // only PURE function.
-    const storedList = localStorage.getItem("watched");
-    return JSON.parse(storedList);
-  });
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
+
   // const [watched, setWatched] = useState([]);
   // useEffect(function () {
   //   console.log("A");
@@ -44,12 +40,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched] // as soon as watched changes it effects.
-  );
 
   return (
     <div>
