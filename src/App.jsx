@@ -1,16 +1,14 @@
 import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./Star/StarRating";
+import { useMovies } from "./useMovies";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-const KEY = "769d777b";
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
   const [watched, setWatched] = useState(function () {
     // whenever initial of use state depends on computation,
     //always pass a function that React execute on initial render.
@@ -53,48 +51,6 @@ export default function App() {
     [watched] // as soon as watched changes it effects.
   );
 
-  useEffect(
-    function () {
-      const controller = new AbortController();
-      async function fetchMovie() {
-        try {
-          setIsLoading(true);
-          setError("");
-
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-
-          if (!res.ok)
-            throw new Error("Something went wrong in fetching movies!!");
-          const data = await res.json();
-          if (data.Response === "False") throw new Error("No movie Found");
-          setMovies(data.Search);
-
-          setIsLoading(false);
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setError(err.message);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-
-      fetchMovie();
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
-
   return (
     <div>
       <Navbar>
@@ -116,6 +72,7 @@ export default function App() {
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
               onAddMovie={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
@@ -257,7 +214,8 @@ function ErrorMessage({ message }) {
     </p>
   );
 }
-function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, onAddMovie, watched }) {
+  const KEY = "769d777b";
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
@@ -267,10 +225,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
   // use effect is applied
   useEffect(
     function () {
-      if (userRating) countRef.current += 1;
+      if (userRating) countRef.current++; //countRef.current += 1;
     },
     [userRating]
   );
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
   const {
     Title: title,
     Year: year,
@@ -293,7 +255,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
-      countRatingDecision: countRef.current,
+      countRatingDecision: countRef.current, //this is for behind the scene NOT in render logic(UI) counting,useRef
+      // no rerender is needed
     };
 
     onAddMovie(newWatchedMovie);
@@ -352,18 +315,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
           </header>
           <section>
             <div className="rating">
-              <StarRating onSetRating={setUserRating} />
-              <button className="btn-add" onClick={handleAdd}>
-                + Add to list
-              </button>
-
-              {/* {!isWatched ? (
+              {!isWatched ? (
                 <>
-                  <StarRating
-                    maxRating={10}
-                    size={24}
-                    onSetRating={setUserRating}
-                  />
+                  <StarRating onSetRating={setUserRating} />
                   {userRating > 0 && (
                     <button className="btn-add" onClick={handleAdd}>
                       + Add to list
@@ -372,9 +326,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie }) {
                 </>
               ) : (
                 <p>
-                  You rated with movie {watchedUserRating} <span>⭐️</span>
+                  You rated this movie with {watchedUserRating} <span>⭐️</span>
                 </p>
-              )} */}
+              )}
             </div>
             <h3>
               <em>{plot}</em>
