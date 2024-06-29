@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./Star/StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -88,20 +89,35 @@ function Search({ query, setQuery }) {
 
   // );
   const inputEl = useRef(null);
-  useEffect(
-    function () {
-      function callback(e) {
-        if (document.activeElement === inputEl.current) return;
-        if (e.code === "Enter" || e.code === "NumpadEnter") {
-          inputEl.current.focus();
-          setQuery("");
-        }
-      }
-      document.addEventListener("keydown", callback);
-      return () => document.addEventListener("keydown", callback);
-    },
-    [setQuery]
-  );
+  // useEffect(
+  //   function () {
+  //     function callback(e) {
+  //       if (document.activeElement === inputEl.current) return;
+  //       if (e.code === "Enter" || e.code === "NumpadEnter") {
+  //         inputEl.current.focus();
+  //         setQuery("");
+  //       }
+  //     }
+  //     document.addEventListener("keydown", callback);
+  //     return () => document.addEventListener("keydown", callback);
+  //   },
+  //   [setQuery]
+  // );
+
+  //instead of the above snipet the following two may be used:
+  /////////////
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
+  useKey("NumpadEnter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
+  /////////////
+
   return (
     <input
       className="search"
@@ -252,6 +268,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddMovie, watched }) {
     onAddMovie(newWatchedMovie);
     onCloseMovie();
   }
+  useKey("Escape", onCloseMovie);
 
   useEffect(
     function () {
